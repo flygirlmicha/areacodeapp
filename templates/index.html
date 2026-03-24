@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Lookup Tools</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        h1.page-title {
+            text-align: center;
+            color: #1a1a2e;
+            font-size: 1.6rem;
+            margin: 0 0 32px 0;
+        }
+        .panels {
+            display: flex;
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+        .panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 28px;
+            flex: 1;
+        }
+        .panel h2 {
+            font-size: 1.1rem;
+            color: #1a1a2e;
+            margin: 0 0 4px 0;
+        }
+        .panel .panel-sub {
+            font-size: 0.82rem;
+            color: #999;
+            margin: 0 0 20px 0;
+        }
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 0;
+        }
+        input[type="text"]:focus {
+            border-color: #4a90e2;
+        }
+        .panel-areacode input[type="text"] {
+            letter-spacing: 3px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        button {
+            padding: 10px 16px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        button:hover { background: #357abd; }
+
+        .result-box {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .result-box.success {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            color: #1a1a2e;
+        }
+        .result-box.error {
+            background: #fdecea;
+            border: 1px solid #ef9a9a;
+            color: #c62828;
+            font-weight: 500;
+        }
+        .result-box .result-label {
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        .result-box table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .result-box td {
+            padding: 4px 2px;
+            vertical-align: top;
+        }
+        .result-box td:first-child {
+            color: #555;
+            font-weight: 600;
+            width: 45%;
+            white-space: nowrap;
+            padding-right: 8px;
+        }
+        .areacode-result {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            .panels { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="page-title">Network Lookup Tools</h1>
+
+    <div class="panels">
+
+        <!-- Area Code -->
+        <div class="panel panel-areacode">
+            <h2>Area Code</h2>
+            <p class="panel-sub">US &amp; Canada</p>
+            <form method="POST" action="/">
+                <input type="hidden" name="action" value="areacode">
+                <div class="input-row">
+                    <input type="text" name="area_code" placeholder="212" maxlength="3" value="{{ ac_query }}" autofocus>
+                    <button type="submit">Lookup</button>
+                </div>
+            </form>
+            {% if ac_result %}
+            <div class="result-box success">
+                <div class="result-label">{{ ac_query }}</div>
+                <div class="areacode-result">{{ ac_result }}</div>
+            </div>
+            {% elif ac_error %}
+            <div class="result-box error">{{ ac_error }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Domain WHOIS -->
+        <div class="panel panel-domain">
+            <h2>Domain WHOIS</h2>
+            <p class="panel-sub">Registrar &amp; registration date</p>
+            <form method="POST" action="/">
+                <input type="hidden" name="action" value="domain">
+                <div class="input-row">
+                    <input type="text" name="domain_query" placeholder="google.com" value="{{ domain_query }}">
+                    <button type="submit">Lookup</button>
+                </div>
+            </form>
+            {% if domain_result %}
+            <div class="result-box success">
+                <div class="result-label">{{ domain_result.domain }}</div>
+                <table>
+                    <tr>
+                        <td>Registrar</td>
+                        <td>{{ domain_result.registrar }}</td>
+                    </tr>
+                    <tr>
+                        <td>Registered</td>
+                        <td>{{ domain_result.created }}</td>
+                    </tr>
+                </table>
+            </div>
+            {% elif domain_error %}
+            <div class="result-box error">{{ domain_error }}</div>
+            {% endif %}
+        </div>
+
+        <!-- IP Geolocation -->
+        <div class="panel panel-ip">
+            <h2>IP Geolocation</h2>
+            <p class="panel-sub">Location, ISP &amp; coordinates</p>
+            <form method="POST" action="/">
+                <input type="hidden" name="action" value="ip">
+                <div class="input-row">
+                    <input type="text" name="ip_query" placeholder="8.8.8.8" value="{{ ip_query }}">
+                    <button type="submit">Lookup</button>
+                </div>
+            </form>
+            {% if ip_result %}
+            <div class="result-box success">
+                <div class="result-label">{{ ip_result.ip }}</div>
+                <table>
+                    <tr><td>City</td><td>{{ ip_result.city }}</td></tr>
+                    <tr><td>Region</td><td>{{ ip_result.region }}</td></tr>
+                    <tr><td>Country</td><td>{{ ip_result.country }}</td></tr>
+                    <tr><td>ISP</td><td>{{ ip_result.isp }}</td></tr>
+                    <tr><td>Organization</td><td>{{ ip_result.org }}</td></tr>
+                    <tr><td>Coordinates</td><td>{{ ip_result.lat }}, {{ ip_result.lon }}</td></tr>
+                </table>
+            </div>
+            {% elif ip_error %}
+            <div class="result-box error">{{ ip_error }}</div>
+            {% endif %}
+        </div>
+
+    </div>
+</body>
+</html>
