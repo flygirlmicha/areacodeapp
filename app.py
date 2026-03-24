@@ -1,9 +1,10 @@
 import re
 import requests
 import whois
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
+app.secret_key = "changeme-local-dev-key"
 
 AREA_CODES = {
     # Alabama
@@ -239,37 +240,22 @@ def is_domain(value):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    # Area code
-    ac_result = None
-    ac_error = None
-    ac_query = ""
-
-    # Domain WHOIS
-    domain_result = None
-    domain_error = None
-    domain_query = ""
-
-    # IP geolocation
-    ip_result = None
-    ip_error = None
-    ip_query = ""
-
     if request.method == "POST":
         action = request.form.get("action")
 
         if action == "areacode":
             ac_query = request.form.get("area_code", "").strip()
             if not ac_query.isdigit() or len(ac_query) != 3:
-                ac_error = "Please enter a valid 3-digit area code."
+                session["ac"] = {"query": ac_query, "error": "Please enter a valid 3-digit area code."}
             elif ac_query in AREA_CODES:
-                ac_result = AREA_CODES[ac_query]
+                session["ac"] = {"query": ac_query, "result": AREA_CODES[ac_query]}
             else:
-                ac_error = f"Area code {ac_query} was not found."
+                session["ac"] = {"query": ac_query, "error": f"Area code {ac_query} was not found."}
 
         elif action == "domain":
             domain_query = request.form.get("domain_query", "").strip().lower()
             if not is_domain(domain_query):
-                domain_error = "Please enter a valid domain (e.g. google.com)."
+                session["domain"] = {"query": domain_query, "error": "Please enter a valid domain (e.g. google.com)."}
             else:
                 try:
                     w = whois.whois(domain_query)
@@ -278,20 +264,20 @@ def index():
                     if isinstance(creation, list):
                         creation = creation[0]
                     creation_str = creation.strftime("%B %d, %Y") if creation else "N/A"
-                    domain_result = {"domain": domain_query, "registrar": registrar, "created": creation_str}
+                    session["domain"] = {"query": domain_query, "result": {"domain": domain_query, "registrar": registrar, "created": creation_str}}
                 except Exception:
-                    domain_error = f"Could not retrieve WHOIS data for '{domain_query}'."
+                    session["domain"] = {"query": domain_query, "error": f"Could not retrieve WHOIS data for '{domain_query}'."}
 
         elif action == "ip":
             ip_query = request.form.get("ip_query", "").strip()
             if not is_ip_address(ip_query):
-                ip_error = "Please enter a valid IP address (e.g. 8.8.8.8)."
+                session["ip"] = {"query": ip_query, "error": "Please enter a valid IP address (e.g. 8.8.8.8)."}
             else:
                 try:
                     resp = requests.get(f"http://ip-api.com/json/{ip_query}", timeout=5)
                     data = resp.json()
                     if data.get("status") == "success":
-                        ip_result = {
+                        session["ip"] = {"query": ip_query, "result": {
                             "ip": ip_query,
                             "city": data.get("city", "N/A"),
                             "region": data.get("regionName", "N/A"),
@@ -300,17 +286,24 @@ def index():
                             "org": data.get("org", "N/A"),
                             "lat": data.get("lat", "N/A"),
                             "lon": data.get("lon", "N/A"),
-                        }
+                        }}
                     else:
-                        ip_error = f"Could not get geolocation for {ip_query}."
+                        session["ip"] = {"query": ip_query, "error": f"Could not get geolocation for {ip_query}."}
                 except Exception:
-                    ip_error = "Failed to reach geolocation service. Check your internet connection."
+                    session["ip"] = {"query": ip_query, "error": "Failed to reach geolocation service. Check your internet connection."}
+
+        elif action == "clear":
+            session.clear()
+
+    ac = session.get("ac", {})
+    domain = session.get("domain", {})
+    ip = session.get("ip", {})
 
     return render_template(
         "index.html",
-        ac_result=ac_result, ac_error=ac_error, ac_query=ac_query,
-        domain_result=domain_result, domain_error=domain_error, domain_query=domain_query,
-        ip_result=ip_result, ip_error=ip_error, ip_query=ip_query,
+        ac_result=ac.get("result"), ac_error=ac.get("error"), ac_query=ac.get("query", ""),
+        domain_result=domain.get("result"), domain_error=domain.get("error"), domain_query=domain.get("query", ""),
+        ip_result=ip.get("result"), ip_error=ip.get("error"), ip_query=ip.get("query", ""),
     )
 
 
