@@ -92,3 +92,22 @@ document.getElementById("clearBtn").addEventListener("click", () => {
     ["acInput", "domainInput", "ipInput"].forEach(id => document.getElementById(id).value = "");
     ["acResult", "domainResult", "ipResult"].forEach(id => document.getElementById(id).innerHTML = "");
 });
+
+// On popup open, check if a context menu lookup is pending
+chrome.storage.local.get("pendingLookup", ({ pendingLookup }) => {
+    if (!pendingLookup) return;
+    chrome.storage.local.remove("pendingLookup");
+
+    const { action, value } = pendingLookup;
+
+    if (action === "areacode") {
+        document.getElementById("acInput").value = value;
+        doLookup("areacode", { area_code: value }, document.getElementById("acResult"), document.getElementById("acBtn"));
+    } else if (action === "domain") {
+        document.getElementById("domainInput").value = value;
+        doLookup("domain", { domain_query: value }, document.getElementById("domainResult"), document.getElementById("domainBtn"));
+    } else if (action === "ip") {
+        document.getElementById("ipInput").value = value;
+        doLookup("ip", { ip_query: value }, document.getElementById("ipResult"), document.getElementById("ipBtn"));
+    }
+});
