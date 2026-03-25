@@ -300,6 +300,20 @@ def index():
         elif action == "clear":
             session.clear()
 
+        # If request wants JSON (from the extension), return JSON now
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest" and action != "clear":
+            ac = session.get("ac", {})
+            domain = session.get("domain", {})
+            ip = session.get("ip", {})
+            if action == "areacode":
+                return jsonify(ac.get("result") and {"result": ac["result"]} or {"error": ac.get("error")})
+            elif action == "domain":
+                d = domain.get("result")
+                return jsonify(d if d else {"error": domain.get("error")})
+            elif action == "ip":
+                i = ip.get("result")
+                return jsonify(i if i else {"error": ip.get("error")})
+
     ac = session.get("ac", {})
     domain = session.get("domain", {})
     ip = session.get("ip", {})

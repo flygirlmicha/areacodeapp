@@ -31,9 +31,12 @@ async function doLookup(action, body, resultEl, btn) {
     setLoading(btn, resultEl, true);
     try {
         const params = new URLSearchParams({ action, ...body });
-        const resp = await fetch(BASE_URL + "/api", {
+        const resp = await fetch(BASE_URL + "/", {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Requested-With": "XMLHttpRequest",
+            },
             body: params.toString(),
         });
         if (!resp.ok) throw new Error("Server error");
