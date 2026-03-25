@@ -1,7 +1,7 @@
 import re
 import requests
 import whois
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, jsonify
 
 app = Flask(__name__)
 app.secret_key = "changeme-local-dev-key"
@@ -305,6 +305,60 @@ def index():
         domain_result=domain.get("result"), domain_error=domain.get("error"), domain_query=domain.get("query", ""),
         ip_result=ip.get("result"), ip_error=ip.get("error"), ip_query=ip.get("query", ""),
     )
+
+
+@app.route("/api", methods=["POST"])
+def api():
+    action = request.form.get("action")
+
+    if action == "areacode":
+        query = request.form.get("area_code", "").strip()
+        if not query.isdigit() or len(query) != 3:
+            return jsonify({"error": "Please enter a valid 3-digit area code."})
+        elif query in AREA_CODES:
+            return jsonify({"result": AREA_CODES[query]})
+        else:
+            return jsonify({"error": f"Area code {query} was not found."})
+
+    elif action == "domain":
+        domain_query = request.form.get("domain_query", "").strip().lower()
+        if not is_domain(domain_query):
+            return jsonify({"error": "Please enter a valid domain (e.g. google.com)."})
+        try:
+            w = whois.whois(domain_query)
+            registrar = w.registrar or "N/A"
+            creation = w.creation_date
+            if isinstance(creation, list):
+                creation = creation[0]
+            creation_str = creation.strftime("%B %d, %Y") if creation else "N/A"
+            return jsonify({"domain": domain_query, "registrar": registrar, "created": creation_str})
+        except Exception:
+            return jsonify({"error": f"Could not retrieve WHOIS data for '{domain_query}'."})
+
+    elif action == "ip":
+        ip_query = request.form.get("ip_query", "").strip()
+        if not is_ip_address(ip_query):
+            return jsonify({"error": "Please enter a valid IP address (e.g. 8.8.8.8)."})
+        try:
+            resp = requests.get(f"http://ip-api.com/json/{ip_query}", timeout=5)
+            data = resp.json()
+            if data.get("status") == "success":
+                return jsonify({
+                    "ip": ip_query,
+                    "city": data.get("city", "N/A"),
+                    "region": data.get("regionName", "N/A"),
+                    "country": data.get("country", "N/A"),
+                    "isp": data.get("isp", "N/A"),
+                    "org": data.get("org", "N/A"),
+                    "lat": data.get("lat", "N/A"),
+                    "lon": data.get("lon", "N/A"),
+                })
+            else:
+                return jsonify({"error": f"Could not get geolocation for {ip_query}."})
+        except Exception:
+            return jsonify({"error": "Failed to reach geolocation service."})
+
+    return jsonify({"error": "Invalid request."})
 
 
 if __name__ == "__main__":
