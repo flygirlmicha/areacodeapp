@@ -1,7 +1,7 @@
 import re
 import requests
 import whois
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, send_from_directory
 
 app = Flask(__name__)
 app.secret_key = "changeme-local-dev-key"
@@ -228,6 +228,11 @@ AREA_CODES = {
     # Northwest Territories, Nunavut, Yukon
     "867": "Northwest Territories / Nunavut / Yukon",
 }
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(app.static_folder, "favicon.ico", mimetype="image/x-icon")
 
 
 def is_ip_address(value):
