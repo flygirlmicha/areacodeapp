@@ -227,6 +227,123 @@ AREA_CODES = {
     "306": "Saskatchewan (statewide)", "639": "Saskatchewan (overlay)",
     # Northwest Territories, Nunavut, Yukon
     "867": "Northwest Territories / Nunavut / Yukon",
+
+    # --- ADDITIONAL US STATE OVERLAYS ---
+    # Alabama
+    "659": "Birmingham (overlay), AL",
+    "938": "Huntsville (overlay), AL",
+    # Arkansas
+    "327": "Jonesboro/Texarkana (overlay), AR",
+    # California
+    "350": "Stockton/Modesto (overlay), CA",
+    "357": "Fresno (overlay), CA",
+    "369": "Santa Rosa/Eureka (overlay), CA",
+    "738": "Los Angeles (overlay), CA",
+    "820": "Santa Barbara/Ventura (overlay), CA",
+    "837": "Sacramento/Redding (overlay), CA",
+    "840": "San Bernardino (overlay), CA",
+    # Colorado
+    "748": "Fort Collins/Grand Junction (overlay), CO",
+    "983": "Denver (overlay), CO",
+    # Florida
+    "324": "Jacksonville (overlay), FL",
+    "645": "Miami (overlay), FL",
+    # Georgia
+    "943": "Atlanta (overlay), GA",
+    # Illinois
+    "447": "Springfield/Champaign (overlay), IL",
+    "464": "Chicago South Suburbs (overlay), IL",
+    "730": "Southern Illinois (overlay), IL",
+    "861": "Peoria/Bloomington (overlay), IL",
+    # Louisiana
+    "457": "Shreveport (overlay), LA",
+    # Michigan
+    "679": "Detroit (overlay), MI",
+    # Minnesota
+    "924": "Rochester/Southern MN (overlay), MN",
+    # Mississippi
+    "471": "Tupelo (overlay), MS",
+    # Missouri
+    "235": "Columbia/Southeast Missouri (overlay), MO",
+    "557": "St. Louis (overlay), MO",
+    # New York
+    "329": "Poughkeepsie/Hudson Valley (overlay), NY",
+    "363": "Nassau County (Long Island, overlay), NY",
+    "624": "Buffalo (overlay), NY",
+    # North Carolina
+    "472": "Fayetteville/Wilmington (overlay), NC",
+    # Ohio
+    "283": "Cincinnati (overlay), OH",
+    "326": "Dayton (overlay), OH",
+    "436": "Cleveland/Elyria (overlay), OH",
+    # Pennsylvania
+    "223": "Harrisburg/Lancaster (overlay), PA",
+    "582": "Erie/Altoona (overlay), PA",
+    # South Carolina
+    "821": "Greenville/Upstate SC (overlay), SC",
+    "839": "Columbia/Midlands SC (overlay), SC",
+    # Tennessee
+    "729": "Chattanooga (overlay), TN",
+    # Texas
+    "621": "Houston (overlay), TX",
+    "945": "Dallas (overlay), TX",
+    # Virginia
+    "686": "Richmond (overlay), VA",
+    # Washington D.C.
+    "771": "Washington, D.C. (overlay)",
+    # Wisconsin
+    "274": "Green Bay/Appleton (overlay), WI",
+    "353": "Madison (overlay), WI",
+
+    # --- US TERRITORIES ---
+    "340": "U.S. Virgin Islands",
+    "670": "Northern Mariana Islands",
+    "671": "Guam",
+    "684": "American Samoa",
+    "787": "Puerto Rico",
+    "939": "Puerto Rico (overlay)",
+
+    # --- CARIBBEAN / OTHER NANP COUNTRIES ---
+    "242": "The Bahamas",
+    "246": "Barbados",
+    "264": "Anguilla",
+    "268": "Antigua and Barbuda",
+    "284": "British Virgin Islands",
+    "345": "Cayman Islands",
+    "441": "Bermuda",
+    "473": "Grenada",
+    "649": "Turks and Caicos Islands",
+    "658": "Jamaica (overlay)",
+    "664": "Montserrat",
+    "721": "Sint Maarten",
+    "758": "Saint Lucia",
+    "767": "Dominica",
+    "784": "Saint Vincent and the Grenadines",
+    "809": "Dominican Republic",
+    "829": "Dominican Republic (overlay)",
+    "849": "Dominican Republic (overlay)",
+    "868": "Trinidad and Tobago",
+    "869": "Saint Kitts and Nevis",
+    "876": "Jamaica",
+
+    # --- ADDITIONAL CANADA OVERLAYS ---
+    # Alberta
+    "368": "Alberta (overlay)",
+    # British Columbia
+    "257": "British Columbia (overlay)",
+    "638": "British Columbia (overlay)",
+    # Manitoba
+    "584": "Manitoba (overlay)",
+    # New Brunswick
+    "428": "New Brunswick (overlay)",
+    # Ontario
+    "382": "London/Windsor/Kitchener (overlay), ON",
+    "683": "Sudbury/Barrie (overlay), ON",
+    "753": "Ottawa (overlay), ON",
+    # Quebec
+    "468": "Gatineau/Sherbrooke/Trois-Rivières (overlay), QC",
+    # Saskatchewan
+    "474": "Saskatchewan (overlay)",
 }
 
 
